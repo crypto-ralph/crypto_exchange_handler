@@ -1,3 +1,6 @@
+""" Unit tests for kucoin.py """
+
+
 def test_kucoin_object_created(kucoin_client):
     assert kucoin_client.access_key == "access"
     assert kucoin_client.secret_key == "secret"

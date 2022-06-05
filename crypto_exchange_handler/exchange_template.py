@@ -145,11 +145,7 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    ###########################################################
-    # Data processing - Do not override!
-    ###########################################################
-
-    def dump_market_data_to_file(
+    def dump_market_data_to_file(  # pylint: disable=too-many-arguments
         self,
         symbol: str,
         interval: str = "30m",

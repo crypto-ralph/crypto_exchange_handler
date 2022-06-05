@@ -30,17 +30,12 @@ class Binance(exchange_template.ExchangeAPI):
         return None
 
     def get_all_balances(self) -> dict:
-        """
-        Gets all balances available on account.
-
-        :return: Dictionary with coin - balance pair
-        """
         info = self.client.get_account()
         result = {}
         for asset in info["balances"]:
             total = float(asset["free"]) + float(asset["locked"])
             if total != 0:
-                result[asset["asset"]] = "{:.10f}".format(total)
+                result[asset["asset"]] = f"{total:.10f}"
         return result
 
     def withdraw_asset(self, asset, target_addr, amount):
@@ -67,11 +62,11 @@ class Binance(exchange_template.ExchangeAPI):
         ticker = None
         for i in range(4):
             ticker = self.client.get_orderbook_tickers()
-            if ticker is not None:
-                break
-            else:
+            if ticker is None:
                 time.sleep(1)
                 print("Try again: " + str(i) + "/4")
+            else:
+                break
 
         if ticker is None:
             return None
@@ -92,7 +87,7 @@ class Binance(exchange_template.ExchangeAPI):
             tickers = self.client.get_orderbook_tickers()
         except BinanceRequestException:
             print("ERROR: Could not get ticker")
-            return -1
+            return None
 
         for ticker in tickers:
             if ticker["symbol"] == coin.upper() + pair.upper():
@@ -101,8 +96,8 @@ class Binance(exchange_template.ExchangeAPI):
                 elif side == "bid":
                     return ticker["bidPrice"]
 
-    def get_order_book(self, symbol, side):
-        order_book = self.client.get_order_book(symbol=symbol.upper())
+    def get_order_book(self, market, side):
+        order_book = self.client.get_order_book(symbol=market.upper())
         return order_book[side]
 
     def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:

@@ -1,10 +1,7 @@
+""" Pytest fixtures for all unit tests. """
 import pytest
 
 from crypto_exchange_handler import kucoin
-
-"""
-Pytest fixtures for unit tests.
-"""
 
 
 @pytest.fixture
