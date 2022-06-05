@@ -93,7 +93,7 @@ class Binance(exchange_template.ExchangeAPI):
             if ticker["symbol"] == coin.upper() + pair.upper():
                 if side == "ask":
                     return ticker["askPrice"]
-                elif side == "bid":
+                if side == "bid":
                     return ticker["bidPrice"]
 
     def get_order_book(self, market, side):

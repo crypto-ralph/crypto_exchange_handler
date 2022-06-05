@@ -8,7 +8,6 @@ from crypto_exchange_handler import kucoin
 def kucoin_client():
     """
     Fixture representing kucoin class instance.
-
     :return: kucoin class instance
     """
     return kucoin.Kucoin("access", "secret", "passphrase")
@@ -16,6 +15,10 @@ def kucoin_client():
 
 @pytest.fixture
 def kucoin_markets_ok_resp():
+    """
+    Mock ok response with a kucoin-like format.
+    :return: response dictionary
+    """
     return {
         "code": "200000",
         "data": [
@@ -52,6 +55,10 @@ def kucoin_markets_ok_resp():
 
 @pytest.fixture
 def kucoin_markets_nok_resp():
+    """
+    Mock nok response with a kucoin-like format.
+    :return: response dictionary
+    """
     return {
         "code": "404",
     }
