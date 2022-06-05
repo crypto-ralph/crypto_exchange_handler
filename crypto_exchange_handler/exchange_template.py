@@ -3,10 +3,29 @@ from typing import Optional, Tuple, Dict
 
 
 class ExchangeAPI:
+    """
+    A base class for every exchange specific class.
+    Defines common methods and contains common parameters.
+
+    Attributes
+    ----------
+    name : str
+        lowercase name of exchange
+    access_key : str
+        public API key
+    secret_key : str
+        private API key
+    api_passphrase : str optional
+        oassphrase required by some exchanges
+
+    Methods
+    -------
+    """
+
     def __init__(
         self, name, access_key: str, secret_key: str, api_passphrase: Optional[str] = None
     ):
-        self.name = name
+        self.name = name.lower()
         self.access_key = access_key
         self.secret_key = secret_key
         self.api_passphrase = api_passphrase
@@ -91,9 +110,9 @@ class ExchangeAPI:
             print("ERROR: Please provide .csv file")
             return -1
 
-        candles = list()
+        candles = []
 
-        with open(file) as csv_file:
+        with open(file, encoding="utf-8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=",")
             line_count = 0
 
