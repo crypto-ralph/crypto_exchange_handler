@@ -4,12 +4,12 @@ Exhange address:  https://www.kucoin.com/
 Api documentation: https://docs.kucoin.com/
 """
 
+from typing import Optional, Dict, Tuple
 import time
 import hmac
 import base64
 import hashlib
 import requests
-from typing import Optional, Dict, Tuple
 
 from . import exchange_template
 
@@ -118,11 +118,11 @@ class Kucoin(exchange_template.ExchangeAPI):
         result = {}
         for coin in data["data"]:
             if coin["currency"] in result:
-                result[coin["currency"]] = "{:.10f}".format(
-                    float(coin["balance"]) + float(result[coin["currency"]])
-                )
+                coin_balance = float(coin["balance"]) + float(result[coin["currency"]])
+                result[coin["currency"]] = f"{coin_balance:.10f}"
+
             else:
-                result[coin["currency"]] = "{:.10f}".format(float(coin["balance"]))
+                result[coin["currency"]] = f"{float(coin['balance']):.10f}"
         return result
 
     def get_balance(self, coin: str):
