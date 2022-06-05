@@ -1,3 +1,9 @@
+"""
+Module contains class implementing handling API request for Kucoin exchange.
+Exhange address:  https://www.kucoin.com/
+Api documentation: https://docs.kucoin.com/
+"""
+
 import time
 import hmac
 from typing import Optional, Dict, Tuple
@@ -7,6 +13,7 @@ import base64
 import hashlib
 
 from . import exchange_template
+
 
 # fmt: off
 HTTP_error_codes = {
@@ -56,6 +63,12 @@ kucoin_codes = {
 
 
 def is_response_valid(response: dict) -> bool:
+    """
+    Checks if data received from exchange is correct.
+
+    :param response: response data from API
+    :return: Boolean value representing validity of response
+    """
     if response["code"] != "200000":
         print(f'ERROR: code: {response["code"]}, msg: {kucoin_codes[response["code"]]}')
         return False

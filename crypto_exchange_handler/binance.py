@@ -20,8 +20,13 @@ class Binance(exchange_template.ExchangeAPI):
         return None
 
     def get_all_balances(self) -> dict:
+        """
+        Gets all balances available on account.
+
+        :return: Dictionary with coin - balance pair
+        """
         info = self.client.get_account()
-        result = dict()
+        result = {}
         for asset in info["balances"]:
             total = float(asset["free"]) + float(asset["locked"])
             if total != 0:
@@ -105,7 +110,6 @@ class Binance(exchange_template.ExchangeAPI):
                 "close": float(candle[4]),
             }
             candles.append(temp)
-
         return tuple(candles)
 
     def get_last_candles(self, symbol, interval, amount):
@@ -121,5 +125,4 @@ class Binance(exchange_template.ExchangeAPI):
                 "close": float(candle[4]),
             }
             candles.append(temp)
-
         return candles

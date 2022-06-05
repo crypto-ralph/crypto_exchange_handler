@@ -1,5 +1,12 @@
+"""
+Module contains template class ExchangeAPI from which every
+exchange class should derive to keep common output of methods.
+"""
+
 import csv
 from typing import Optional, Tuple, Dict
+
+
 
 
 class ExchangeAPI:
@@ -48,8 +55,7 @@ class ExchangeAPI:
         """
         Gets all balances available on account.
 
-        :return:
-        Dictionary with coin - balance pair
+        :return: Dictionary with coin - balance pair
         """
         raise NotImplementedError
 
@@ -63,15 +69,35 @@ class ExchangeAPI:
         raise NotImplementedError
 
     def get_available_markets(self) -> Optional[Tuple[str, ...]]:
+        """
+        Gets tuple of markets available on target exchange.
+        :return: Tuple of available market.
+        """
         raise NotImplementedError
 
-    def get_coin_price(self, name, pair="BTC"):
+    def get_coin_price(self, coin: str, pair="BTC"):
+        """
+
+        :param coin:
+        :param pair:
+        :return:
+        """
         raise NotImplementedError
 
     def get_coins_prices(self) -> Optional[dict]:
+        """
+
+        :return:
+        """
         raise NotImplementedError
 
     def get_order_book(self, market, side):
+        """
+
+        :param market:
+        :param side:
+        :return:
+        """
         raise NotImplementedError
 
     ###########################################################
@@ -90,12 +116,35 @@ class ExchangeAPI:
         raise NotImplementedError
 
     def create_order(self, market, side, price, amount):
+        """
+        Send request to create order on target exchange
+        :param market:
+        :param side:
+        :param price:
+        :param amount:
+        :return:
+        """
         raise NotImplementedError
 
     def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
+        """
+
+        :param symbol:
+        :param interval:
+        :param start:
+        :param end:
+        :return:
+        """
         raise NotImplementedError
 
     def get_last_candles(self, symbol: str, interval: str, amount):
+        """
+
+        :param symbol:
+        :param interval:
+        :param amount:
+        :return:
+        """
         raise NotImplementedError
 
     ###########################################################
@@ -144,10 +193,16 @@ class ExchangeAPI:
                 writer.writerow(templist)
 
     @staticmethod
-    def load_market_data_file(file):
+    def load_market_data_file(file) -> Optional[tuple]:
+        """
+        Parse and load existing file created using dump_market_data_to_file method.
+
+        :param file: path to file to be parsed
+        :return: tuple data with candles loaded from file
+        """
         if file.find(".csv") == -1:
             print("ERROR: Please provide .csv file")
-            return -1
+            return None
 
         candles = []
 
