@@ -93,7 +93,9 @@ class Binance(exchange_template.ExchangeAPI):
     def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
         candles = []
 
-        klines = self.client.get_historical_klines(symbol=symbol, interval=interval, start_str=start, end_str=end)
+        klines = self.client.get_historical_klines(
+            symbol=symbol, interval=interval, start_str=start, end_str=end
+        )
         for candle in klines:
             temp = {
                 "ts": int(candle[0]),

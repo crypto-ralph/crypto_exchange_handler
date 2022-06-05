@@ -3,7 +3,9 @@ from typing import Optional, Tuple, Dict
 
 
 class ExchangeAPI:
-    def __init__(self, name, access_key: str, secret_key: str, api_passphrase: Optional[str] = None):
+    def __init__(
+        self, name, access_key: str, secret_key: str, api_passphrase: Optional[str] = None
+    ):
         self.name = name
         self.access_key = access_key
         self.secret_key = secret_key
@@ -72,15 +74,15 @@ class ExchangeAPI:
                 print("ERROR: Wrong paramaters. Provide amount or start")
                 return
 
-        with open(file, "w", newline="") as csvfile:
+        with open(file, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-            templist = [x for x in candles[0].keys()]
+            templist = list(candles[0].keys())
             writer.writerow(templist)
 
             for line in candles:
                 templist.clear()
-                for x in line.values():
-                    templist.append(x)
+                for val in line.values():
+                    templist.append(val)
                 writer.writerow(templist)
 
     @staticmethod

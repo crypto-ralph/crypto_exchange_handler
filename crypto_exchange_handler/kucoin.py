@@ -8,6 +8,7 @@ import hashlib
 
 from . import exchange_template
 
+# fmt: off
 HTTP_error_codes = {
     "400": "Bad Request -- Invalid request format.",
     "401": "Unauthorized -- Invalid API Key.",
@@ -16,7 +17,8 @@ HTTP_error_codes = {
     "405": "Method Not Allowed -- You tried to access the resource with an invalid method.",
     "415": "Unsupported Media Type. You need to use: application/json.",
     "500": "Internal Server Error -- We had a problem with our server. Try again later.",
-    "503": "Service Unavailable -- We're temporarily offline for maintenance. Please try again later.",
+    "503": "Service Unavailable -- We're temporarily offline for maintenance. "
+           "Please try again later.",
 }
 
 SYSTEM_codes = {
@@ -26,7 +28,8 @@ SYSTEM_codes = {
     "200003": "Number of orders breached the limit",
     "200009": "Please complete the KYC verification before you trade XX",
     "200004": "Balance insufficient",
-    "400001": "Any of KC-API-KEY, KC-API-SIGN, KC-API-TIMESTAMP, KC-API-PASSPHRASE is missing in your request header",
+    "400001": "Any of KC-API-KEY, KC-API-SIGN, KC-API-TIMESTAMP, KC-API-PASSPHRASE "
+              "is missing in your request header",
     "400002": "KC-API-TIMESTAMP Invalid",
     "400003": "KC-API-KEY not exists",
     "400004": "KC-API-PASSPHRASE error",
@@ -36,13 +39,15 @@ SYSTEM_codes = {
     "404000": "Url Not Found",
     "400100": "Parameter Error",
     "400200": "Forbidden to place an order",
-    "400500": "Your located country/region is currently not supported for the trading of this token",
+    "400500": "Your located country/region is currently not "
+              "supported for the trading of this token",
     "400700": "Transaction restricted, there's a risk problem in your account",
     "400800": "Leverage order failed",
     "411100": "User are frozen",
     "500000": "Internal Server Error",
     "900001": "symbol not exists",
 }
+# fmt: off
 
 kucoin_codes = {
     **HTTP_error_codes,
@@ -92,14 +97,15 @@ class Kucoin(exchange_template.ExchangeAPI):
         result = {}
         for coin in data["data"]:
             if coin["currency"] in result:
-                result[coin["currency"]] = "{:.10f}".format(float(coin["balance"]) + float(result[coin["currency"]]))
+                result[coin["currency"]] = "{:.10f}".format(
+                    float(coin["balance"]) + float(result[coin["currency"]])
+                )
             else:
                 result[coin["currency"]] = "{:.10f}".format(float(coin["balance"]))
         return result
 
     def get_balance(self, coin: str):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def get_available_markets(self) -> Optional[Tuple[str, ...]]:
         data = self.send_priv_request("symbols")
@@ -109,28 +115,23 @@ class Kucoin(exchange_template.ExchangeAPI):
 
     def get_coin_price(self, coin: str, pair: str = "BTC"):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def get_coins_prices(self):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def get_order_book(self, market: str, side: str):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def withdraw_asset(self, asset: str, target_addr: str, amount: str):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def create_order(self, market: str, side: str, price: str, amount: str):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
-    def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> Optional[tuple]:
+    def get_candles(
+        self, symbol: str, interval: str, start: str, end: str = None
+    ) -> Optional[tuple]:
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
 
     def get_last_candles(self, symbol: str, interval: str, amount):
         print(f"ERROR: {self.name} client - Not implemented")
-        return None
