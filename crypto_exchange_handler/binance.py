@@ -131,3 +131,6 @@ class Binance(exchange_template.ExchangeAPI):
             }
             candles.append(temp)
         return candles
+
+    def create_order(self, market, side, price, amount):
+        print(f"ERROR: {self.name} client - Not implemented")
