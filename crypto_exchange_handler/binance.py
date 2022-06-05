@@ -48,18 +48,18 @@ class Binance(exchange_template.ExchangeAPI):
     def get_symbol_ticker(self) -> dict:
         return {symbol["symbol"]: symbol["price"] for symbol in self.client.get_symbol_ticker()}
 
-    def get_coins_prices(self, side: str = "ask"):
-        ticker = -1
+    def get_coins_prices(self, side: str = "ask") -> Optional[dict]:
+        ticker = None
         for i in range(4):
             ticker = self.client.get_orderbook_tickers()
-            if ticker != -1:
+            if ticker is not None:
                 break
             else:
                 time.sleep(1)
                 print("Try again: " + str(i) + "/4")
 
-        if ticker == -1:
-            return -1
+        if ticker is None:
+            return None
 
         coins = {}
         for item in ticker:

@@ -27,7 +27,7 @@ class ExchangeAPI:
     def get_coin_price(self, name, pair="BTC"):
         raise NotImplementedError
 
-    def get_coins_prices(self):
+    def get_coins_prices(self) -> Optional[dict]:
         raise NotImplementedError
 
     def get_order_book(self, market, side):
