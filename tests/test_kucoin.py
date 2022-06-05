@@ -15,7 +15,7 @@ def test_get_balance(kucoin_client):
 
 def test_get_available_markets_ok(kucoin_client, kucoin_markets_ok_resp, monkeypatch):
     """Tests if available markets is extracted in desired format"""
-    def send_priv_request_mock(self):
+    def send_priv_request_mock(self):  # pylint: disable=unused-argument
         return kucoin_markets_ok_resp
 
     monkeypatch.setattr(kucoin_client, "send_priv_request", send_priv_request_mock)
@@ -27,7 +27,7 @@ def test_get_available_markets_ok(kucoin_client, kucoin_markets_ok_resp, monkeyp
 
 def test_get_available_markets_nok(kucoin_client, kucoin_markets_nok_resp, monkeypatch):
     """Tests if None is returned in case of error in response"""
-    def send_priv_request_mock(self):
+    def send_priv_request_mock(self):  # pylint: disable=unused-argument
         return kucoin_markets_nok_resp
 
     monkeypatch.setattr(kucoin_client, "send_priv_request", send_priv_request_mock)

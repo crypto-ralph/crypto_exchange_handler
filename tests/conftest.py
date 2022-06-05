@@ -1,7 +1,7 @@
 """ Pytest fixtures for all unit tests. """
 import pytest
 
-from crypto_exchange_handler import kucoin
+from crypto_exchange_handler import kucoin # pylint: disable=E0611
 
 
 @pytest.fixture
