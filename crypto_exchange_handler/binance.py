@@ -104,6 +104,7 @@ class Binance(exchange_template.ExchangeAPI):
                     return ticker["askPrice"]
                 if side == "bid":
                     return ticker["bidPrice"]
+        return None
 
     def get_order_book(self, market, side):
         order_book = self.client.get_order_book(symbol=market.upper())
