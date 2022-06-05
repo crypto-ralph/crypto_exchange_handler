@@ -2,9 +2,18 @@ import pytest
 
 from crypto_exchange_handler import kucoin
 
+"""
+Pytest fixtures for unit tests.
+"""
+
 
 @pytest.fixture
 def kucoin_client():
+    """
+    Fixture representing kucoin class instance.
+
+    :return: kucoin class instance
+    """
     return kucoin.Kucoin("access", "secret", "passphrase")
 
 

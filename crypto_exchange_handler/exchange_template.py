@@ -25,21 +25,41 @@ class ExchangeAPI:
     def __init__(
         self, name, access_key: str, secret_key: str, api_passphrase: Optional[str] = None
     ):
+        """
+        Constructs all the necessary attributes for the ExchangeAPI object.
+
+        Parameters
+        ----------
+        name : str
+            lowercase name of exchange
+        access_key : str
+            public API key
+        secret_key : str
+            private API key
+        api_passphrase : str optional
+            oassphrase required by some exchanges
+        """
         self.name = name.lower()
         self.access_key = access_key
         self.secret_key = secret_key
         self.api_passphrase = api_passphrase
 
-    ###########################################################
-    # API Functions
-    # Getters
-    # Abstract, need to be overriden
-    ###########################################################
-
     def get_all_balances(self) -> Optional[Dict[str, str]]:
+        """
+        Gets all balances available on account.
+
+        :return:
+        Dictionary with coin - balance pair
+        """
         raise NotImplementedError
 
-    def get_balance(self, coin: str):
+    def get_balance(self, coin: str) -> Optional[str]:
+        """
+        Gets balance of coin specified in parameter.
+
+        :param coin: str with coin name
+        :return: str representing coin balance. If there is no such coin returns None
+        """
         raise NotImplementedError
 
     def get_available_markets(self) -> Optional[Tuple[str, ...]]:
@@ -58,7 +78,15 @@ class ExchangeAPI:
     # Actions
     ###########################################################
 
-    def withdraw_asset(self, asset, target_addr, amount):
+    def withdraw_asset(self, asset: str, target_addr: str, amount: str):
+        """
+        Sends request for asset withdrawal to the exchange.
+
+        :param asset:
+        :param target_addr:
+        :param amount:
+        :return: None
+        """
         raise NotImplementedError
 
     def create_order(self, market, side, price, amount):
@@ -83,6 +111,17 @@ class ExchangeAPI:
         start: str = None,
         end: str = None,
     ):
+        """
+        Creates .csv file with market data gathered from exchange API.
+
+        :param symbol:
+        :param interval:
+        :param file:
+        :param amount:
+        :param start:
+        :param end:
+        :return:
+        """
 
         if amount is not None:
             candles = self.get_last_candles(symbol, interval, amount)

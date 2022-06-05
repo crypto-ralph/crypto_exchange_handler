@@ -12,12 +12,12 @@ class Binance(exchange_template.ExchangeAPI):
         super().__init__("binance", access_key, secret_key)
         self.client = Client(self.access_key, self.secret_key)
 
-    def get_balance(self, coin):
+    def get_balance(self, coin) -> Optional[str]:
         info = self.client.get_account()
         for balance in info["balances"]:
-            if balance["asset"] != coin.upper():
+            if balance["asset"] == coin.upper():
                 return balance["free"]
-        return -1
+        return None
 
     def get_all_balances(self) -> dict:
         info = self.client.get_account()
