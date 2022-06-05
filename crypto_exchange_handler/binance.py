@@ -53,9 +53,18 @@ class Binance(exchange_template.ExchangeAPI):
         return available_markets
 
     def get_symbol_info(self, symbol: str) -> Optional[dict]:
+        """
+        Gets symbol info from API
+        :param symbol: cryptocurrency symbol as a string
+        :return:
+        """
         return self.get_symbol_info(symbol)
 
     def get_symbol_ticker(self) -> dict:
+        """
+        Gets actual ticker from API.
+        :return: dict
+        """
         return {symbol["symbol"]: symbol["price"] for symbol in self.client.get_symbol_ticker()}
 
     def get_coins_prices(self, side: str = "ask") -> Optional[dict]:
