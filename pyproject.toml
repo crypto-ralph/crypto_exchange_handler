@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "crypto_exchange_handler"
+version = "0.0.2"
+description = "This package provides template class and its implementations to handle crypto exchanges in unified way."
+authors = ["CryptoRalph <doxter@protonmail.com>"]
+license = "MIT"
+readme = "README.md"
+include = ["LICENSE"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-binance = "^1.0.16"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+mypy = "^0.960"
+black = "^22.3.0"
+pytest = "^7.1.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
