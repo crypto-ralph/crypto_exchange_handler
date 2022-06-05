@@ -1,3 +1,9 @@
+"""
+Module contains class implementing handling API request for Binance exchange.
+Exhange address:  https://www.binance.com/
+Api documentation
+"""
+
 import time
 from typing import Optional
 
@@ -8,6 +14,10 @@ from . import exchange_template
 
 
 class Binance(exchange_template.ExchangeAPI):
+    """
+    Class handles connection ot the Binance crypto exchange API.
+    """
+
     def __init__(self, access_key: str, secret_key: str):
         super().__init__("binance", access_key, secret_key)
         self.client = Client(self.access_key, self.secret_key)

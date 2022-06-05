@@ -6,11 +6,10 @@ Api documentation: https://docs.kucoin.com/
 
 import time
 import hmac
-from typing import Optional, Dict, Tuple
-
-import requests
 import base64
 import hashlib
+import requests
+from typing import Optional, Dict, Tuple
 
 from . import exchange_template
 
@@ -76,17 +75,26 @@ def is_response_valid(response: dict) -> bool:
 
 
 class Kucoin(exchange_template.ExchangeAPI):
+    """
+    Class handles connection ot the KuCoin crypto exchange API.
+    """
     def __init__(self, access_key: str, secret_key: str, api_passphrase: str):
         super().__init__("kucoin", access_key, secret_key, api_passphrase)
         self.api_addr = "https://api.kucoin.com"
 
-    def send_priv_request(self, addr: str, req_type: str = "GET"):
+    def send_priv_request(self, addr: str, req_type: str = "GET") -> dict:
+        """
+        Implementation of communication whith exchange API.
+        :param addr: endpoint for request
+        :param req_type: data for request
+        :return: json data with response
+        """
         now = int(time.time() * 1000)
         str_to_sign = str(now) + req_type + "/api/v1/" + addr
         signature = base64.b64encode(
             hmac.new(
-                self.secret_key.encode("utf-8"),
-                str_to_sign.encode("utf-8"),
+                self.secret_key.encode('utf-8'),
+                str_to_sign.encode('utf-8'),
                 hashlib.sha256,
             ).digest()
         )
@@ -98,7 +106,7 @@ class Kucoin(exchange_template.ExchangeAPI):
             "Content-Type": "application/json",
         }
 
-        addr = self.api_addr + "/api/v1/" + addr
+        addr = f'{self.api_addr}/api/v1/{addr}'
         response = requests.request("get", addr, headers=headers)
         return response.json()
 

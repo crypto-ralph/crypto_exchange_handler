@@ -7,8 +7,6 @@ import csv
 from typing import Optional, Tuple, Dict
 
 
-
-
 class ExchangeAPI:
     """
     A base class for every exchange specific class.
