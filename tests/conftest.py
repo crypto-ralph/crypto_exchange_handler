@@ -1,7 +1,7 @@
 """ Pytest fixtures for all unit tests. """
 import pytest
 
-from crypto_exchange_handler.kucoin import Kucoin
+from crypto_exchange_handler import kucoin
 
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def kucoin_client():
     Fixture representing kucoin class instance.
     :return: kucoin class instance
     """
-    return Kucoin("access", "secret", "passphrase")
+    return kucoin.Kucoin("access", "secret", "passphrase")
 
 
 @pytest.fixture

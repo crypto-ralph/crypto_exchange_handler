@@ -21,6 +21,7 @@ jobs:
         pip install requests
         pip install python-binance
         pip install pytest
+        pip install -e .
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
