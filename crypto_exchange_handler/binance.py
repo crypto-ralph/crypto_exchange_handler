@@ -46,12 +46,9 @@ class Binance(exchange_template.ExchangeAPI):
         return self.get_symbol_info(symbol)
 
     def get_symbol_ticker(self) -> dict:
-        return {
-            symbol["symbol"]: symbol["price"]
-            for symbol in self.client.get_symbol_ticker()
-        }
+        return {symbol["symbol"]: symbol["price"] for symbol in self.client.get_symbol_ticker()}
 
-    def get_coins_prices(self, side: str = 'ask'):
+    def get_coins_prices(self, side: str = "ask"):
         ticker = -1
         for i in range(4):
             ticker = self.client.get_orderbook_tickers()
@@ -69,13 +66,13 @@ class Binance(exchange_template.ExchangeAPI):
             index = item["symbol"].find("BTC")
             if index != -1:
                 if item["symbol"][:index] != "":
-                    if side == 'ask':
+                    if side == "ask":
                         coins[item["symbol"][:index]] = item["askPrice"]
-                    elif side == 'bid':
+                    elif side == "bid":
                         coins[item["symbol"][:index]] = item["bidPrice"]
         return coins
 
-    def get_coin_price(self, coin: str, pair: str = "BTC", side: str = 'ask'):
+    def get_coin_price(self, coin: str, pair: str = "BTC", side: str = "ask"):
         try:
             tickers = self.client.get_orderbook_tickers()
         except BinanceRequestException:
@@ -84,23 +81,19 @@ class Binance(exchange_template.ExchangeAPI):
 
         for ticker in tickers:
             if ticker["symbol"] == coin.upper() + pair.upper():
-                if side == 'ask':
+                if side == "ask":
                     return ticker["askPrice"]
-                elif side == 'bid':
+                elif side == "bid":
                     return ticker["bidPrice"]
 
     def get_order_book(self, symbol, side):
         order_book = self.client.get_order_book(symbol=symbol.upper())
         return order_book[side]
 
-    def get_candles(
-        self, symbol: str, interval: str, start: str, end: str = None
-    ) -> tuple:
+    def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
         candles = []
 
-        klines = self.client.get_historical_klines(
-            symbol=symbol, interval=interval, start_str=start, end_str=end
-        )
+        klines = self.client.get_historical_klines(symbol=symbol, interval=interval, start_str=start, end_str=end)
         for candle in klines:
             temp = {
                 "ts": int(candle[0]),

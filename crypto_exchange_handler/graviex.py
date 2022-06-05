@@ -1,4 +1,4 @@
-from exchangeAPI import templateApi
+from exchange_template import ExchangeAPI
 
 import ssl
 import hashlib
@@ -11,7 +11,7 @@ import json
 import sys
 
 
-class Graviex(templateApi.ExchangeAPI):
+class Graviex(ExchangeAPI):
     def __init__(self, designation, name, access_key: str, secret_key: str):
         super().__init__(name, access_key, secret_key, designation)
         self.name = "graviex"
@@ -63,9 +63,7 @@ class Graviex(templateApi.ExchangeAPI):
 
         if self.request.find("access_key") != -1:
             message = "GET|/api/v3/" + addr + "|" + self.request
-            signature = self.gen_hash(
-                bytes(self.secret_key, "utf-8"), bytes(message, "utf-8")
-            )
+            signature = self.gen_hash(bytes(self.secret_key, "utf-8"), bytes(message, "utf-8"))
             query += "&signature=" + signature
         try:
             content = urllib.request.urlopen(query, context=self.ssl_ctxt).read()
@@ -82,12 +80,8 @@ class Graviex(templateApi.ExchangeAPI):
     def post_request(self, addr):
         query = self.api_addr + addr + "?" + self.request
         message = "POST|/api/v3/" + addr + "|" + self.request
-        signature = self.gen_hash(
-            bytes(self.secret_key, "utf-8"), bytes(message, "utf-8")
-        )
-        req = urllib.request.Request(
-            query, bytes(urllib.parse.urlencode({"signature": signature}), "utf-8")
-        )
+        signature = self.gen_hash(bytes(self.secret_key, "utf-8"), bytes(message, "utf-8"))
+        req = urllib.request.Request(query, bytes(urllib.parse.urlencode({"signature": signature}), "utf-8"))
 
         try:
             content = urllib.request.urlopen(req, context=self.ssl_ctxt).read()
@@ -205,9 +199,7 @@ class Graviex(templateApi.ExchangeAPI):
     ###########################################################
     # Actions
     def withdraw_asset(self, asset, target_addr, amount):
-        self.gen_priv_request(
-            currency=asset.lower(), fund_uid=target_addr, sum=str(amount)
-        )
+        self.gen_priv_request(currency=asset.lower(), fund_uid=target_addr, sum=str(amount))
         result = self.post_request("create_withdraw")
         return result
 

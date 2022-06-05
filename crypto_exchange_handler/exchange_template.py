@@ -1,5 +1,5 @@
 import csv
-from typing import Optional
+from typing import Optional, Tuple, Dict
 
 
 class ExchangeAPI:
@@ -15,13 +15,13 @@ class ExchangeAPI:
     # Abstract, need to be overriden
     ###########################################################
 
-    def get_all_balances(self) -> Optional[dict]:
+    def get_all_balances(self) -> Optional[Dict[str, str]]:
         raise NotImplementedError
 
-    def get_balance(self, coin):
+    def get_balance(self, coin: str):
         raise NotImplementedError
 
-    def get_available_markets(self):
+    def get_available_markets(self) -> Optional[Tuple[str, ...]]:
         raise NotImplementedError
 
     def get_coin_price(self, name, pair="BTC"):
@@ -43,9 +43,7 @@ class ExchangeAPI:
     def create_order(self, market, side, price, amount):
         raise NotImplementedError
 
-    def get_candles(
-        self, symbol: str, interval: str, start: str, end: str = None
-    ) -> tuple:
+    def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
         raise NotImplementedError
 
     def get_last_candles(self, symbol: str, interval: str, amount):
@@ -75,9 +73,7 @@ class ExchangeAPI:
                 return
 
         with open(file, "w", newline="") as csvfile:
-            writer = csv.writer(
-                csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
-            )
+            writer = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
             templist = [x for x in candles[0].keys()]
             writer.writerow(templist)
 
