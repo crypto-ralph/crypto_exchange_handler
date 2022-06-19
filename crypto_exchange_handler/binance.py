@@ -5,7 +5,7 @@ Api documentation
 """
 
 import time
-from typing import Optional
+from typing import Optional, Tuple
 
 from binance.exceptions import BinanceRequestException
 from binance.client import Client
@@ -67,7 +67,9 @@ class Binance(exchange_template.ExchangeAPI):
         """
         return {symbol["symbol"]: symbol["price"] for symbol in self.client.get_symbol_ticker()}
 
-    def get_coins_prices(self, side: str = "ask") -> Optional[dict]:
+    def get_coins_prices(
+        self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+    ) -> Optional[dict]:
         ticker = None
         for i in range(4):
             ticker = self.client.get_orderbook_tickers()
@@ -85,25 +87,32 @@ class Binance(exchange_template.ExchangeAPI):
             index = item["symbol"].find("BTC")
             if index != -1:
                 if item["symbol"][:index] != "":
-                    if side == "ask":
+                    if price_type == "ask":
                         coins[item["symbol"][:index]] = item["askPrice"]
-                    elif side == "bid":
+                    elif price_type == "bid":
                         coins[item["symbol"][:index]] = item["bidPrice"]
         return coins
 
-    def get_coin_price(self, coin: str, pair: str = "BTC", side: str = "ask"):
+    def get_coin_price(
+        self, coin: str, pair: str = "BTC", price_type: str = "ask"
+    ) -> Optional[str]:
         try:
             tickers = self.client.get_orderbook_tickers()
         except BinanceRequestException:
             print("ERROR: Could not get ticker")
             return None
-
+        pair = coin.upper() + pair.upper()
         for ticker in tickers:
-            if ticker["symbol"] == coin.upper() + pair.upper():
-                if side == "ask":
+            if ticker["symbol"] == pair:
+                if price_type == "ask":
                     return ticker["askPrice"]
-                if side == "bid":
+                if price_type == "bid":
                     return ticker["bidPrice"]
+
+        print(
+            f"ERROR: Pair: {pair} not found in available tickers. Use get_available_markets"
+            f" to check if pair is available"
+        )
         return None
 
     def get_order_book(self, market, side):
@@ -130,6 +139,9 @@ class Binance(exchange_template.ExchangeAPI):
     def get_last_candles(self, symbol, interval, amount):
         candles = []
         klines = self.client.get_klines(symbol=symbol, interval=interval, limit=amount)
+
+        for i in range(2):
+            print(f"test {i}")
 
         for candle in klines:
             temp = {

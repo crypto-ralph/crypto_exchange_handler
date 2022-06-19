@@ -3,7 +3,6 @@ Module contains class implementing handling API request for Kucoin exchange.
 Exhange address:  https://www.kucoin.com/
 Api documentation: https://docs.kucoin.com/
 """
-
 from typing import Optional, Dict, Tuple
 import time
 import hmac
@@ -82,15 +81,32 @@ class Kucoin(exchange_template.ExchangeAPI):
         super().__init__("kucoin", access_key, secret_key, api_passphrase)
         self.api_addr = "https://api.kucoin.com"
 
-    def send_priv_request(self, addr: str, req_type: str = "GET") -> dict:
+    def send_priv_request(self, addr: str,
+                          data: Optional[dict] = None) -> dict:
         """
         Implementation of communication whith exchange API.
         :param addr: endpoint for request
         :param req_type: data for request
+        :param data: data for request
         :return: json data with response
         """
+
+        req_type = "GET"
+
+        def build_data_string(_data: dict) -> str:
+            result = "?"
+            for param, value in _data.items():
+                result += f'{param}={value}&'
+
+            return result[:-1]
+
+        if data:
+            data_str = build_data_string(data)
+        else:
+            data_str = ""
+
         now = int(time.time() * 1000)
-        str_to_sign = str(now) + req_type + "/api/v1/" + addr
+        str_to_sign = str(now) + req_type + "/api/v1/" + addr + data_str
         signature = base64.b64encode(
             hmac.new(
                 self.secret_key.encode('utf-8'),
@@ -106,8 +122,9 @@ class Kucoin(exchange_template.ExchangeAPI):
             "Content-Type": "application/json",
         }
 
-        addr = f'{self.api_addr}/api/v1/{addr}'
-        response = requests.request("get", addr, headers=headers)
+        addr = f'{self.api_addr}/api/v1/{addr}{data_str}'
+        response = requests.request("get", f"{addr}", headers=headers)
+
         return response.json()
 
     def get_all_balances(self) -> Optional[Dict[str, str]]:
@@ -120,7 +137,6 @@ class Kucoin(exchange_template.ExchangeAPI):
             if coin["currency"] in result:
                 coin_balance = float(coin["balance"]) + float(result[coin["currency"]])
                 result[coin["currency"]] = f"{coin_balance:.10f}"
-
             else:
                 result[coin["currency"]] = f"{float(coin['balance']):.10f}"
         return result
@@ -134,11 +150,59 @@ class Kucoin(exchange_template.ExchangeAPI):
             return None
         return tuple((pair["symbol"] for pair in data["data"]))
 
-    def get_coin_price(self, coin: str, pair: str = "BTC"):
-        print(f"ERROR: {self.name} client - Not implemented")
+    def get_coin_price(self, coin: str,
+                       pair: str = "BTC",
+                       price_type: str = "ask") -> Optional[str]:
 
-    def get_coins_prices(self):
-        print(f"ERROR: {self.name} client - Not implemented")
+        pair = coin.upper() + pair.upper()
+
+        data = self.send_priv_request(
+            "market/orderbook/level1",
+            {
+                "symbol": f"{pair}"
+            }
+        )
+
+        if not is_response_valid(data):
+            return None
+
+        if data["data"]:
+            if price_type == "ask":
+                return data["data"]["bestAsk"]
+            if price_type == "bid":
+                return data["data"]["bestBid"]
+            if price_type == "latest":
+                return data["data"]["price"]
+        else:
+            print(
+                f"ERROR: Pair: {pair} not found in available tickers. "
+                f"Use get_available_markets to check if pair is available"
+            )
+            return None
+
+        print(f"ERROR: Wrong price type: {price_type}\nAvailable values: [ask, bid, latest]")
+        return None
+
+    def get_coins_prices(
+            self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+    ) -> Optional[dict]:
+        data = self.send_priv_request("market/allTickers")
+
+        if not is_response_valid(data):
+            return None
+
+        symbols_list = [f"{coin.upper()}-{pair.upper()}" for coin in coins]
+        result = {}
+
+        for ticker in data["data"]["ticker"]:
+            if ticker["symbol"] in symbols_list:
+                if price_type == "ask":
+                    result[ticker["symbol"]] = ticker["sell"]
+                if price_type == "bid":
+                    result[ticker["symbol"]] = ticker["buy"]
+                if price_type == "latest":
+                    result[ticker["symbol"]] = ticker["last"]
+        return result
 
     def get_order_book(self, market: str, side: str):
         print(f"ERROR: {self.name} client - Not implemented")
