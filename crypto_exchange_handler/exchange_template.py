@@ -73,18 +73,21 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    def get_coin_price(self, coin: str, pair="BTC"):
+    def get_coin_price(
+        self, coin: str, pair: str = "BTC", price_type: str = "ask"
+    ) -> Optional[str]:
         """
-
         :param coin:
         :param pair:
+        :param price_type:
         :return:
         """
         raise NotImplementedError
 
-    def get_coins_prices(self) -> Optional[dict]:
+    def get_coins_prices(
+        self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+    ) -> Optional[dict]:
         """
-
         :return:
         """
         raise NotImplementedError
