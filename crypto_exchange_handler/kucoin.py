@@ -3,7 +3,6 @@ Module contains class implementing handling API request for Kucoin exchange.
 Exhange address:  https://www.kucoin.com/
 Api documentation: https://docs.kucoin.com/
 """
-from datetime import datetime
 from typing import Optional, Dict, Tuple
 import time
 import hmac
@@ -229,7 +228,7 @@ class Kucoin(exchange_template.ExchangeAPI):
             return None
 
         if "-" not in symbol:
-            print(f"ERROR: Wrong symbol pattern. Correct pattern is <COIN>-<PAIR>")
+            print("ERROR: Wrong symbol pattern. Correct pattern is <COIN>-<PAIR>")
             return None
 
         params = {

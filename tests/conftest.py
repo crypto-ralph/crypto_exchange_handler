@@ -107,6 +107,10 @@ def kucoin_ticker_all_ok_resp():
 
 @pytest.fixture
 def kucoin_klines_resp():
+    """
+    Resposnse whit klines from market/candles endpoint.
+    :return: response dictionary
+    """
     return {
         "code": "200000",
         "data": [
