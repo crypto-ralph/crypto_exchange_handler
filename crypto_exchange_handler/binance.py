@@ -119,7 +119,9 @@ class Binance(exchange_template.ExchangeAPI):
         order_book = self.client.get_order_book(symbol=market.upper())
         return order_book[side]
 
-    def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
+    def get_candles(
+        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
+    ) -> Optional[tuple]:
         candles = []
 
         klines = self.client.get_historical_klines(

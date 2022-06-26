@@ -94,7 +94,6 @@ class ExchangeAPI:
 
     def get_order_book(self, market, side):
         """
-
         :param market:
         :param side:
         :return:
@@ -127,14 +126,23 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    def get_candles(self, symbol: str, interval: str, start: str, end: str = None) -> tuple:
+    def get_candles(
+        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
+    ) -> Optional[tuple]:
         """
 
         :param symbol:
         :param interval:
-        :param start:
-        :param end:
-        :return:
+        :param start: start time for data in format %Y-%m-%d
+        :param end: end time for data in format %Y-%m-%d
+        :return: tuple of kline dictionaries in format:
+                {
+                    "ts": int,
+                    "open": float,
+                    "close": float,
+                    "high": float,
+                    "low": float,
+                }
         """
         raise NotImplementedError
 
