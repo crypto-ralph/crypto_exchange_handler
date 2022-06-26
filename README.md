@@ -2,7 +2,12 @@
 
 This library provides classes which can be used to access cryptocurrency exchanges from your code with unified manner.
 
-# License 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+The work is still in progress so please be aware of possible bugs or changes in the implementations.
+
+Current progress:
+- Binance - 70%
+- Kucoin  - 30%
+
+# License [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 For the details refer to LICENSE.md
