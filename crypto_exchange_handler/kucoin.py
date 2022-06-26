@@ -3,6 +3,7 @@ Module contains class implementing handling API request for Kucoin exchange.
 Exhange address:  https://www.kucoin.com/
 Api documentation: https://docs.kucoin.com/
 """
+from datetime import datetime
 from typing import Optional, Dict, Tuple
 import time
 import hmac
@@ -52,6 +53,12 @@ SYSTEM_codes = {
     "500000": "Internal Server Error",
     "900001": "symbol not exists",
 }
+
+valid_intervals = (
+    "1min", "3min", "5min", "15min", "30min",
+    "1hour", "2hour", "4hour", "6hour", "8hour",
+    "12hour", "1day", "1week"
+)
 # fmt: off
 
 kucoin_codes = {
@@ -214,9 +221,45 @@ class Kucoin(exchange_template.ExchangeAPI):
         print(f"ERROR: {self.name} client - Not implemented")
 
     def get_candles(
-        self, symbol: str, interval: str, start: str, end: str = None
+        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
     ) -> Optional[tuple]:
-        print(f"ERROR: {self.name} client - Not implemented")
+
+        if interval not in valid_intervals:
+            print(f"ERROR: Invalid interval. Valid intervals are: {valid_intervals}")
+            return None
+
+        if "-" not in symbol:
+            print(f"ERROR: Wrong symbol pattern. Correct pattern is <COIN>-<PAIR>")
+            return None
+
+        params = {
+            "symbol": f"{symbol}",
+            "type": f"{interval}",
+        }
+
+        if start:
+            time_start = time.strptime(start, "%Y-%m-%d")
+            params["startAt"] = str(int(time.mktime(time_start)))
+
+        if end:
+            time_end = time.strptime(end, "%Y-%m-%d")
+            params["endAt"] = str(int(time.mktime(time_end)))
+
+        data = self.send_priv_request("market/candles", data=params)
+        if not is_response_valid(data):
+            return None
+
+        klines = [
+            {
+                "ts": int(candle[0]),
+                "open": float(candle[1]),
+                "close": float(candle[2]),
+                "high": float(candle[3]),
+                "low": float(candle[4]),
+            }
+            for candle in data["data"]]
+
+        return tuple(klines)
 
     def get_last_candles(self, symbol: str, interval: str, amount):
         print(f"ERROR: {self.name} client - Not implemented")
