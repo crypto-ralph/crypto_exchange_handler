@@ -1,11 +1,11 @@
 """
 Module contains class implementing handling API request for Binance exchange.
-Exhange address:  https://www.binance.com/
-Api documentation
+Exhange address:   https://www.binance.com/
+Api documentation: https://binance-docs.github.io/apidocs/spot/en/
 """
 
 import time
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 
 from binance.exceptions import BinanceRequestException
 from binance.client import Client
@@ -22,14 +22,21 @@ class Binance(exchange_template.ExchangeAPI):
         super().__init__("binance", access_key, secret_key)
         self.client = Client(self.access_key, self.secret_key)
 
-    def get_balance(self, coin) -> Optional[str]:
+    def get_balance(self, coin: str) -> Optional[str]:
+        """
+        :param coin: coin abbreviation for which balance will be returned
+        :type coin: str
+        :return: String representing float value of balance on account
+        :rtype: str if there is such currency listed, otherwise None
+        """
         info = self.client.get_account()
-        for balance in info["balances"]:
-            if balance["asset"] == coin.upper():
-                return balance["free"]
+        for asset in info["balances"]:
+            if asset["asset"] == coin.upper():
+                total = float(asset["free"]) + float(asset["locked"])
+                return f"{total:.10f}"
         return None
 
-    def get_all_balances(self) -> dict:
+    def get_all_balances(self) -> Optional[Dict[str, str]]:
         info = self.client.get_account()
         result = {}
         for asset in info["balances"]:
