@@ -7,10 +7,11 @@ Api documentation: https://binance-docs.github.io/apidocs/spot/en/
 import time
 from typing import Optional, Tuple, Dict
 
-from binance.exceptions import BinanceRequestException
+from binance.exceptions import BinanceRequestException, BinanceAPIException
 from binance.client import Client
 
 from . import exchange_template
+from .exchange_template import MarketSide
 
 
 class Binance(exchange_template.ExchangeAPI):
@@ -49,15 +50,19 @@ class Binance(exchange_template.ExchangeAPI):
         result = self.client.withdraw(asset=asset, address=target_addr, amount=amount)
         return result
 
-    def get_available_markets(self):
-        available_markets = []
+    def get_available_markets(self) -> Tuple[str, ...]:
+        return tuple([item["symbol"] for item in self.client.get_symbol_ticker()])
+
+    def get_listed_coins(self):
+        listed_coins = []
         ticker = self.client.get_symbol_ticker()
+
         for item in ticker:
             index = item["symbol"].find("BTC")
             if index != -1:
                 if item["symbol"][:index] != "":
-                    available_markets.append(item["symbol"][:index])
-        return available_markets
+                    listed_coins.append(item["symbol"][:index])
+        return listed_coins
 
     def get_symbol_info(self, symbol: str) -> Optional[dict]:
         """
@@ -75,7 +80,7 @@ class Binance(exchange_template.ExchangeAPI):
         return {symbol["symbol"]: symbol["price"] for symbol in self.client.get_symbol_ticker()}
 
     def get_coins_prices(
-        self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+        self, coins: Tuple, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[dict]:
         ticker = None
         for i in range(4):
@@ -94,26 +99,27 @@ class Binance(exchange_template.ExchangeAPI):
             index = item["symbol"].find("BTC")
             if index != -1:
                 if item["symbol"][:index] != "":
-                    if price_type == "ask":
+                    if price_type == MarketSide.ASK:
                         coins[item["symbol"][:index]] = item["askPrice"]
-                    elif price_type == "bid":
+                    elif price_type == MarketSide.BID:
                         coins[item["symbol"][:index]] = item["bidPrice"]
         return coins
 
     def get_coin_price(
-        self, coin: str, pair: str = "BTC", price_type: str = "ask"
+        self, coin: str, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[str]:
         try:
             tickers = self.client.get_orderbook_tickers()
+            print(tickers)
         except BinanceRequestException:
             print("ERROR: Could not get ticker")
             return None
-        pair = coin.upper() + pair.upper()
+        pair = coin.upper() + quote.upper()
         for ticker in tickers:
             if ticker["symbol"] == pair:
-                if price_type == "ask":
+                if price_type == MarketSide.ASK:
                     return ticker["askPrice"]
-                if price_type == "bid":
+                if price_type == MarketSide.BID:
                     return ticker["bidPrice"]
 
         print(
@@ -122,46 +128,65 @@ class Binance(exchange_template.ExchangeAPI):
         )
         return None
 
-    def get_order_book(self, market, side):
-        order_book = self.client.get_order_book(symbol=market.upper())
-        return order_book[side]
+    def get_order_book(self, coin: str, quote: str) -> Optional[dict]:
+        try:
+            order_book = self.client.get_order_book(symbol=f"{coin.upper()}{quote.upper()}")
+
+            return {
+                MarketSide.ASK: order_book[MarketSide.ASK.value],
+                MarketSide.BID: order_book[MarketSide.BID.value],
+            }
+        except BinanceAPIException as e:
+            print(f"ERROR: {e}")
+            return None
 
     def get_candles(
-        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
+        self,
+        coin: str,
+        quote: str,
+        interval: str,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
     ) -> Optional[tuple]:
-        candles = []
-
         klines = self.client.get_historical_klines(
-            symbol=symbol, interval=interval, start_str=start, end_str=end
+            symbol=f"{coin.upper()}{quote.upper()}",
+            interval=interval,
+            start_str=start,
+            end_str=end,
         )
-        for candle in klines:
-            temp = {
-                "ts": int(candle[0]),
+        candles = [
+            {
+                "ts": int(candle[0] / 1000),
                 "open": float(candle[1]),
                 "high": float(candle[2]),
                 "low": float(candle[3]),
                 "close": float(candle[4]),
             }
-            candles.append(temp)
+            for candle in klines
+        ]
+
         return tuple(candles)
 
-    def get_last_candles(self, symbol, interval, amount):
-        candles = []
-        klines = self.client.get_klines(symbol=symbol, interval=interval, limit=amount)
-
-        for i in range(2):
-            print(f"test {i}")
-
-        for candle in klines:
-            temp = {
+    def get_last_candles(
+        self, coin: str, quote: str, interval: str, amount: int
+    ) -> Optional[tuple]:
+        klines = self.client.get_klines(
+            symbol=f"{coin.upper()}{quote.upper()}",
+            interval=interval,
+            limit=amount,
+        )
+        candles = [
+            {
                 "ts": int(candle[0]),
                 "open": float(candle[1]),
                 "high": float(candle[2]),
                 "low": float(candle[3]),
                 "close": float(candle[4]),
             }
-            candles.append(temp)
-        return candles
+            for candle in klines
+        ]
+
+        return tuple(candles)
 
     def create_order(self, market, side, price, amount):
         print(f"ERROR: {self.name} client - Not implemented")

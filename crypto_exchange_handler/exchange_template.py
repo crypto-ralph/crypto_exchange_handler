@@ -4,7 +4,14 @@ exchange class should derive to keep common output of methods.
 """
 
 import csv
+from enum import Enum
 from typing import Optional, Tuple, Dict
+
+
+class MarketSide(Enum):
+    ASK = "asks"
+    BID = "bids"
+    LATEST = "latest"
 
 
 class ExchangeAPI:
@@ -74,35 +81,31 @@ class ExchangeAPI:
         raise NotImplementedError
 
     def get_coin_price(
-        self, coin: str, pair: str = "BTC", price_type: str = "ask"
+        self, coin: str, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[str]:
         """
-        :param coin:
-        :param pair:
+        :param coin: currency to trade
+        :param quote: quote currency
         :param price_type:
         :return:
         """
         raise NotImplementedError
 
     def get_coins_prices(
-        self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+        self, coins: Tuple, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[dict]:
         """
         :return:
         """
         raise NotImplementedError
 
-    def get_order_book(self, market, side):
+    def get_order_book(self, coin: str, quote: str) -> Optional[dict]:
         """
-        :param market:
-        :param side:
+        :param coin: currency to trade
+        :param quote: quote currency
         :return:
         """
         raise NotImplementedError
-
-    ###########################################################
-    # Actions
-    ###########################################################
 
     def withdraw_asset(self, asset: str, target_addr: str, amount: str):
         """
@@ -126,30 +129,57 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    def get_candles(
-        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
-    ) -> Optional[tuple]:
+    def create_market_order(
+        self,
+        side: str,
+        coin: str,
+        quote: str,
+        size: Optional[str] = None,
+        amount: Optional[str] = None,
+    ):
+        """
+        Send trade request to buy or sell at the market's current best available price.
+        :param side: buy or sell
+        :param coin: currency to trade
+        :param quote: quote currency
+        :param size: amount of base currency to use
+        :param amount: amount of quote currency to use
+        :return:
         """
 
-        :param symbol:
+    def get_candles(
+        self,
+        coin: str,
+        quote: str,
+        interval: str,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+    ) -> Optional[tuple]:
+        """
+        Gets market historical data in form of candles represented by dictionary
+        :param coin:
+        :param quote:
         :param interval:
         :param start: start time for data in format %Y-%m-%d
         :param end: end time for data in format %Y-%m-%d
         :return: tuple of kline dictionaries in format:
                 {
                     "ts": int,
-                    "open": float,
-                    "close": float,
-                    "high": float,
-                    "low": float,
+                    "open": float, open price of current interval
+                    "close": float, close price of current interval
+                    "high": float, highest price of current interval
+                    "low": float, lowest price of current interval
                 }
         """
         raise NotImplementedError
 
-    def get_last_candles(self, symbol: str, interval: str, amount):
+    def get_last_candles(
+        self, coin: str, quote: str, interval: str, amount: int
+    ) -> Optional[tuple]:
         """
 
-        :param symbol:
+        :param coin:
+        :param quote:
         :param interval:
         :param amount:
         :return:
@@ -203,7 +233,7 @@ class ExchangeAPI:
         Parse and load existing file created using dump_market_data_to_file method.
 
         :param file: path to file to be parsed
-        :return: tuple data with candles loaded from file
+        :return: tuple with candles data loaded from file
         """
         if file.find(".csv") == -1:
             print("ERROR: Please provide .csv file")
