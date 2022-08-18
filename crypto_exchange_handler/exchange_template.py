@@ -188,7 +188,8 @@ class ExchangeAPI:
 
     def dump_market_data_to_file(  # pylint: disable=too-many-arguments
         self,
-        symbol: str,
+        coin: str,
+        quote: str,
         interval: str = "30m",
         file: str = "data.csv",
         amount=None,
@@ -198,7 +199,8 @@ class ExchangeAPI:
         """
         Creates .csv file with market data gathered from exchange API.
 
-        :param symbol:
+        :param coin:
+        :param quote:
         :param interval:
         :param file:
         :param amount:
@@ -208,24 +210,19 @@ class ExchangeAPI:
         """
 
         if amount is not None:
-            candles = self.get_last_candles(symbol, interval, amount)
+            candles = self.get_last_candles(coin, quote, interval, amount)
         else:
             if start is not None:
-                candles = self.get_candles(symbol, interval, start, end)
+                candles = self.get_candles(coin, quote, interval, start, end)
             else:
                 print("ERROR: Wrong paramaters. Provide amount or start")
                 return
 
         with open(file, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-            templist = list(candles[0].keys())
-            writer.writerow(templist)
-
+            writer.writerow(list(candles[0].keys()))
             for line in candles:
-                templist.clear()
-                for val in line.values():
-                    templist.append(val)
-                writer.writerow(templist)
+                writer.writerow([val for val in line.values()])
 
     @staticmethod
     def load_market_data_file(file) -> Optional[tuple]:
