@@ -1,7 +1,7 @@
-# def test_get_balance(kucoin_client, binance_client):
-#     """Tests if balance has been retrieved correctly"""
-#     assert binance_client.get_balance("BTC") is None
-#     assert kucoin_client.get_balance("BTC") is None
+"""
+Module for testing all clients at once.
+Exchange clients methods should return the same output data.
+"""
 
 
 def test_get_available_markets_ok(

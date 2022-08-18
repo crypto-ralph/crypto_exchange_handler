@@ -1,3 +1,6 @@
+"""
+Fixtures for testing kucoin handler
+"""
 import pytest
 
 

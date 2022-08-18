@@ -1,3 +1,6 @@
+"""
+Fixtures for testing binance handler
+"""
 import pytest
 
 

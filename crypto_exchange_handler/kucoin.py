@@ -269,7 +269,7 @@ class Kucoin(ExchangeAPI):
 
         self.order_id_num += 1
         data = self.send_priv_request("orders", data=params, req_type="post")
-        print(data)
+        return True
 
     def get_candles(
             self,

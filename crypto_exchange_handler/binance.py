@@ -54,6 +54,9 @@ class Binance(exchange_template.ExchangeAPI):
         return tuple([item["symbol"] for item in self.client.get_symbol_ticker()])
 
     def get_listed_coins(self):
+        """
+        :return: list of all coins available on exchange
+        """
         listed_coins = []
         ticker = self.client.get_symbol_ticker()
 
@@ -136,8 +139,8 @@ class Binance(exchange_template.ExchangeAPI):
                 MarketSide.ASK: order_book[MarketSide.ASK.value],
                 MarketSide.BID: order_book[MarketSide.BID.value],
             }
-        except BinanceAPIException as e:
-            print(f"ERROR: {e}")
+        except BinanceAPIException as exception:
+            print(f"ERROR: {exception}")
             return None
 
     def get_candles(
