@@ -268,8 +268,10 @@ class Kucoin(ExchangeAPI):
             params["amount"] = amount
 
         self.order_id_num += 1
-        data = self.send_priv_request("orders", data=params, req_type="post")
-        return True
+        response = self.send_priv_request("orders", data=params, req_type="post")
+        if not is_response_valid(response):
+            return None
+        return response
 
     def get_candles(
             self,
