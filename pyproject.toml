@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crypto_exchange_handler"
-version = "0.0.5"
+version = "0.0.6"
 description = "This package provides template class and its implementations to handle crypto exchanges in unified way."
 authors = ["CryptoRalph <doxter@protonmail.com>"]
 license = "MIT"

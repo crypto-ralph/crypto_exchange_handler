@@ -4,7 +4,17 @@ exchange class should derive to keep common output of methods.
 """
 
 import csv
+from enum import Enum
 from typing import Optional, Tuple, Dict
+
+
+class MarketSide(Enum):
+    """
+    Class representing market side for various requests i.e. klines or orderbook.
+    """
+    ASK = "asks"
+    BID = "bids"
+    LATEST = "latest"
 
 
 class ExchangeAPI:
@@ -74,35 +84,31 @@ class ExchangeAPI:
         raise NotImplementedError
 
     def get_coin_price(
-        self, coin: str, pair: str = "BTC", price_type: str = "ask"
+        self, coin: str, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[str]:
         """
-        :param coin:
-        :param pair:
+        :param coin: currency to trade
+        :param quote: quote currency
         :param price_type:
         :return:
         """
         raise NotImplementedError
 
     def get_coins_prices(
-        self, coins: Tuple, pair: str = "BTC", price_type: str = "ask"
+        self, coins: Tuple, quote: str = "BTC", price_type: MarketSide = MarketSide.ASK
     ) -> Optional[dict]:
         """
         :return:
         """
         raise NotImplementedError
 
-    def get_order_book(self, market, side):
+    def get_order_book(self, coin: str, quote: str) -> Optional[dict]:
         """
-        :param market:
-        :param side:
+        :param coin: currency to trade
+        :param quote: quote currency
         :return:
         """
         raise NotImplementedError
-
-    ###########################################################
-    # Actions
-    ###########################################################
 
     def withdraw_asset(self, asset: str, target_addr: str, amount: str):
         """
@@ -126,30 +132,57 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    def get_candles(
-        self, symbol: str, interval: str, start: Optional[str] = None, end: Optional[str] = None
-    ) -> Optional[tuple]:
+    def create_market_order(  # pylint: disable=too-many-arguments
+        self,
+        side: str,
+        coin: str,
+        quote: str,
+        size: Optional[str] = None,
+        amount: Optional[str] = None,
+    ):
+        """
+        Send trade request to buy or sell at the market's current best available price.
+        :param side: buy or sell
+        :param coin: currency to trade
+        :param quote: quote currency
+        :param size: amount of base currency to use
+        :param amount: amount of quote currency to use
+        :return:
         """
 
-        :param symbol:
+    def get_candles(  # pylint: disable=too-many-arguments
+        self,
+        coin: str,
+        quote: str,
+        interval: str,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+    ) -> Optional[tuple]:
+        """
+        Gets market historical data in form of candles represented by dictionary
+        :param coin:
+        :param quote:
         :param interval:
         :param start: start time for data in format %Y-%m-%d
         :param end: end time for data in format %Y-%m-%d
         :return: tuple of kline dictionaries in format:
                 {
                     "ts": int,
-                    "open": float,
-                    "close": float,
-                    "high": float,
-                    "low": float,
+                    "open": float, open price of current interval
+                    "close": float, close price of current interval
+                    "high": float, highest price of current interval
+                    "low": float, lowest price of current interval
                 }
         """
         raise NotImplementedError
 
-    def get_last_candles(self, symbol: str, interval: str, amount):
+    def get_last_candles(
+        self, coin: str, quote: str, interval: str, amount: int
+    ) -> Optional[tuple]:
         """
 
-        :param symbol:
+        :param coin:
+        :param quote:
         :param interval:
         :param amount:
         :return:
@@ -158,7 +191,8 @@ class ExchangeAPI:
 
     def dump_market_data_to_file(  # pylint: disable=too-many-arguments
         self,
-        symbol: str,
+        coin: str,
+        quote: str,
         interval: str = "30m",
         file: str = "data.csv",
         amount=None,
@@ -168,7 +202,8 @@ class ExchangeAPI:
         """
         Creates .csv file with market data gathered from exchange API.
 
-        :param symbol:
+        :param coin:
+        :param quote:
         :param interval:
         :param file:
         :param amount:
@@ -178,24 +213,19 @@ class ExchangeAPI:
         """
 
         if amount is not None:
-            candles = self.get_last_candles(symbol, interval, amount)
+            candles = self.get_last_candles(coin, quote, interval, amount)
         else:
             if start is not None:
-                candles = self.get_candles(symbol, interval, start, end)
+                candles = self.get_candles(coin, quote, interval, start, end)
             else:
                 print("ERROR: Wrong paramaters. Provide amount or start")
                 return
 
         with open(file, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-            templist = list(candles[0].keys())
-            writer.writerow(templist)
-
+            writer.writerow(list(candles[0].keys()))
             for line in candles:
-                templist.clear()
-                for val in line.values():
-                    templist.append(val)
-                writer.writerow(templist)
+                writer.writerow(list(line.values()))
 
     @staticmethod
     def load_market_data_file(file) -> Optional[tuple]:
@@ -203,7 +233,7 @@ class ExchangeAPI:
         Parse and load existing file created using dump_market_data_to_file method.
 
         :param file: path to file to be parsed
-        :return: tuple data with candles loaded from file
+        :return: tuple with candles data loaded from file
         """
         if file.find(".csv") == -1:
             print("ERROR: Please provide .csv file")

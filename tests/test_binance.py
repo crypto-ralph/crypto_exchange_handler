@@ -1,7 +1,7 @@
 """ Unit tests for binance.py """
 
 
-def test_kucoin_object_created(binance_client):
+def test_binance_object_created(binance_client):
     """Tests if instance has been created correctly"""
     assert binance_client.access_key == "access"
     assert binance_client.secret_key == "secret"
