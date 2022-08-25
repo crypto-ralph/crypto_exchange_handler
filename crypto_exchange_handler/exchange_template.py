@@ -9,6 +9,9 @@ from typing import Optional, Tuple, Dict
 
 
 class MarketSide(Enum):
+    """
+    Class representing market side for various requests i.e. klines or orderbook.
+    """
     ASK = "asks"
     BID = "bids"
     LATEST = "latest"
@@ -129,7 +132,7 @@ class ExchangeAPI:
         """
         raise NotImplementedError
 
-    def create_market_order(
+    def create_market_order(  # pylint: disable=too-many-arguments
         self,
         side: str,
         coin: str,
@@ -147,7 +150,7 @@ class ExchangeAPI:
         :return:
         """
 
-    def get_candles(
+    def get_candles(  # pylint: disable=too-many-arguments
         self,
         coin: str,
         quote: str,
@@ -222,7 +225,7 @@ class ExchangeAPI:
             writer = csv.writer(csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
             writer.writerow(list(candles[0].keys()))
             for line in candles:
-                writer.writerow([val for val in line.values()])
+                writer.writerow(list(line.values()))
 
     @staticmethod
     def load_market_data_file(file) -> Optional[tuple]:

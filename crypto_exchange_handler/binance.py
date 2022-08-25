@@ -51,7 +51,8 @@ class Binance(exchange_template.ExchangeAPI):
         return result
 
     def get_available_markets(self) -> Tuple[str, ...]:
-        return tuple([item["symbol"] for item in self.client.get_symbol_ticker()])
+        markets = [item["symbol"] for item in self.client.get_symbol_ticker()]
+        return tuple(markets)
 
     def get_listed_coins(self):
         """
@@ -143,7 +144,7 @@ class Binance(exchange_template.ExchangeAPI):
             print(f"ERROR: {exception}")
             return None
 
-    def get_candles(
+    def get_candles(  # pylint: disable=too-many-arguments
         self,
         coin: str,
         quote: str,
