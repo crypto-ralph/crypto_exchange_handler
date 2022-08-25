@@ -1,7 +1,7 @@
 """ Pytest fixtures for all unit tests. """
 import pytest
-from crypto_exchange_handler.kucoin import Kucoin  # pylint: disable=E0611, E0401
-from crypto_exchange_handler.binance import Binance  # pylint: disable=E0611, E0401
+from crypto_exchange_handler.kucoin import Kucoin
+from crypto_exchange_handler.binance import Binance
 
 
 pytest_plugins = ["kucoin_fixtures", "binance_fixtures"]
