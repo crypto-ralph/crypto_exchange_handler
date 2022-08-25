@@ -238,7 +238,7 @@ class Kucoin(ExchangeAPI):
     def create_order(self, market: str, side: str, price: str, amount: str):
         print(f"ERROR: {self.name} client - Not implemented")
 
-    def create_market_order(
+    def create_market_order(  # pylint: disable=too-many-arguments
             self, side: str, coin: str, quote: str,
             size: Optional[str] = None, amount: Optional[str] = None
     ):
@@ -273,7 +273,7 @@ class Kucoin(ExchangeAPI):
             return None
         return response
 
-    def get_candles(
+    def get_candles(  # pylint: disable=too-many-arguments
             self,
             coin: str,
             quote: str,

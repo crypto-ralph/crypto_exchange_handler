@@ -1,5 +1,5 @@
 """ Unit tests for kucoin.py """
-from crypto_exchange_handler.exchange_template import MarketSide
+from crypto_exchange_handler.exchange_template import MarketSide # pylint: disable=import-error
 
 
 def test_kucoin_object_created(kucoin_client):
